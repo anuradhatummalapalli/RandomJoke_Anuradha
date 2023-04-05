@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <div id="divJokecount">
+        <select id="jokeCount" name="cars">
+            <option value="1">1</option>
+            <option value="3">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <button type="button" onclick="jokeCountJS(true);">Get Random Joke Count Data</button>
+        <button type="button" onclick="jokeCountJS(false);">Get Random Data</button>
+    </div>
+</div>
+<div id="divData">
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+       // jokeCountJS();
+    });
+    function jokeCountJS(val) {
+        var countVal=0;
+        if (val == true)
+            countVal = $("#jokeCount").val();
+        else{
+            countVal = 0;
+            $("#jokeCount").val(1);
+        }
+        var data = null;
+        $.ajax({
+            type: "GET",
+            url: "/Home/GetRamdomJoke",
+            data: { count: countVal },
+            success: function (result) {
+                if (result != null) {
+                    var jsonvalue = JSON.parse(JSON.parse(result))
+                    if (jsonvalue.success == true) {
+                        $.each(jsonvalue.body, function (i, $val) {
+                            if (data == null) {
+                                data = $val.punchline + '</br>' + $val.setup;
+                            }
+                            else {
+                                data += "</br></br>" + $val.punchline + '</br>' + $val.setup;
+                            }
+                        });
+                        $("#divData").html(data);
+                    }
+                }
+                else {
+                    $("#divData").html("getting Error");
+                }
+            },
+            error: function (error) {
+                alert('error');
+            }
+        });
+    }
+</script>
